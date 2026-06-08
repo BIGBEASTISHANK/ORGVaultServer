@@ -1,15 +1,24 @@
 #![allow(nonstandard_style)]
 
+use ORGVaultServer::server;
 use std;
 use tokio;
-use ORGVaultServer::server;
 
 fn main() -> std::io::Result<()> {
     // Variable
     let tokioRT: tokio::runtime::Runtime = tokio::runtime::Runtime::new().unwrap();
 
     // Checking config file
-    server::ConfigFileGetter();
+    let configFile: std::fs::File = match server::ConfigFileGetter() {
+        Ok(fileVec) => {
+            println!("Config File found... Proceeding!");
+            fileVec.file
+        }
+        Err(e) => {
+            println!("Error getting config file: {:?}", e);
+            std::process::exit(1);
+        }
+    };
 
     // Starting feedback
     println!(
