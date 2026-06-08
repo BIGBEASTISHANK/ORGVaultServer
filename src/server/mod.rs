@@ -1,65 +1,46 @@
 pub mod webServer;
-use actix_web::{App, HttpServer, web};
+use crate::configFileReturnValue;
 use std::net::Ipv4Addr;
 
 // Global Variables
-pub const serverAddress: Ipv4Addr = Ipv4Addr::UNSPECIFIED;
-pub const serverPort: u16 = 8020;
-
-pub const globalProgramConfigFile: &str =
-    "/home/ishank/Documents/ORGVault/Source Code/Server/TestingDIR/config.json"; // Production Location: "/etc/orgvault/config.json"
+pub const SERVER_ADDRESS: Ipv4Addr = Ipv4Addr::UNSPECIFIED;
+pub const SERVER_PORT: u16 = 8020;
 
 // Config file checking / creation
-pub fn configFileGetter() -> std::fs::File {
-    return match std::fs::File::open(globalProgramConfigFile) {
+pub fn ConfigFileGetter() -> Result<configFileReturnValue, std::io::Error> {
+    return match std::fs::File::open(crate::GLOBAL_PROGRAM_CONFIG_FILE) {
         // Found file
-        Ok(cf) => {
-            println!("Config File found... Proceding!");
-            cf // Returning File
-        }
+        Ok(cf) => Ok(configFileReturnValue {
+            file: cf,
+            status: true,
+        }),
 
         // Not found file
         Err(e) => match e.kind() {
             std::io::ErrorKind::NotFound => {
                 // Creating directory
-                if let Some(parent) = std::path::Path::new(globalProgramConfigFile).parent() {
+                if let Some(parent) =
+                    std::path::Path::new(crate::GLOBAL_PROGRAM_CONFIG_FILE).parent()
+                {
                     std::fs::create_dir_all(parent).expect("Error creating parent directories");
-                    std::process::exit(1);
                 }
 
                 // Creating file
-                let cf: std::fs::File = match std::fs::File::create(globalProgramConfigFile) {
-                    Ok(file) => {
-                        println!("Global config file created!");
-                        file
-                    }
+                let cf: std::fs::File = std::fs::File::create(crate::GLOBAL_PROGRAM_CONFIG_FILE)
+                    .expect("Error creating global config file");
+                println!("Global config file created!");
 
-                    Err(error) => {
-                        println!("Error creating global config file: {:?}", error);
-                        std::process::exit(1);
-                    }
-                };
-                cf // Returning File
+                Ok(configFileReturnValue {
+                    file: cf,
+                    status: true,
+                }) // Returning file and status
             }
 
             // Unexpected error occured
-            other => {
-                println!("Unexpected error opening config file: {:?}", other);
-                std::process::exit(1);
-            }
+            _ => Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Unexpected error occurred",
+            )),
         },
     };
-}
-
-// APIEndpoint config function
-fn apiEndpointConfig(cfg: &mut web::ServiceConfig) {
-    cfg.route("/", web::get().to(webServer::webIndex));
-}
-
-// Server Main Function
-pub async fn serverMain() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().configure(apiEndpointConfig))
-        .bind((serverAddress, serverPort))?
-        .run()
-        .await
 }
