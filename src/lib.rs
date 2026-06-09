@@ -5,10 +5,10 @@ pub mod security;
 pub mod server;
 
 pub const GLOBAL_PROGRAM_CONFIG_FILE: &str =
-    "/home/ishank/Documents/ORGVault/ORGVaultServer/GlobalConfigTesting/config.json"; // Production Location: "/etc/orgvault/config.json"
+    "/run/media/ishank/Work/Projects/ORGVault/ORGVaultServer/GlobalConfigTesting/config.json"; // Production Location: "/etc/orgvault/config.json"
 
-#[derive(Debug)]
-pub struct configFileReturnValue {
+pub struct CONFIG_FILE_RETURN_VALUE {
     pub file: std::fs::File,
+    pub fileFeedback: String,
     pub status: bool,
 }

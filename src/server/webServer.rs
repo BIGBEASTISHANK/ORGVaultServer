@@ -17,7 +17,7 @@ fn APIEndpointConfig(cfg: &mut web::ServiceConfig) {
 // Run web server
 pub async fn WebServerRunner() -> Result<(), std::io::Error> {
     return HttpServer::new(|| App::new().configure(APIEndpointConfig))
-        .bind((server::SERVER_ADDRESS, server::SERVER_PORT))?
+        .bind((server::SERVER_ADDRESS, server::WEB_SERVER_PORT))?
         .run()
         .await
 }

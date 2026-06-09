@@ -1,17 +1,19 @@
 pub mod webServer;
-use crate::configFileReturnValue;
+use crate::CONFIG_FILE_RETURN_VALUE;
 use std::net::Ipv4Addr;
 
-// Global Variables
+// Server addr/port
 pub const SERVER_ADDRESS: Ipv4Addr = Ipv4Addr::UNSPECIFIED;
-pub const SERVER_PORT: u16 = 8020;
+pub const WEB_SERVER_PORT: u16 = 8020;
+pub const CLIENT_COMMUNICATION_PORT: u16 = 8040;
 
 // Config file checking / creation
-pub fn ConfigFileGetter() -> Result<configFileReturnValue, std::io::Error> {
+pub fn ConfigFileGetter() -> Result<CONFIG_FILE_RETURN_VALUE, std::io::Error> {
     return match std::fs::File::open(crate::GLOBAL_PROGRAM_CONFIG_FILE) {
         // Found file
-        Ok(cf) => Ok(configFileReturnValue {
-            file: cf,
+        Ok(CF) => Ok(CONFIG_FILE_RETURN_VALUE {
+            file: CF,
+            fileFeedback: "Global config file was found!".to_string(),
             status: true,
         }),
 
@@ -19,19 +21,19 @@ pub fn ConfigFileGetter() -> Result<configFileReturnValue, std::io::Error> {
         Err(e) => match e.kind() {
             std::io::ErrorKind::NotFound => {
                 // Creating directory
-                if let Some(parent) =
+                if let Some(PARENT) =
                     std::path::Path::new(crate::GLOBAL_PROGRAM_CONFIG_FILE).parent()
                 {
-                    std::fs::create_dir_all(parent).expect("Error creating parent directories");
+                    std::fs::create_dir_all(PARENT).expect("Error creating parent directories");
                 }
 
                 // Creating file
-                let cf: std::fs::File = std::fs::File::create(crate::GLOBAL_PROGRAM_CONFIG_FILE)
+                let CF: std::fs::File = std::fs::File::create(crate::GLOBAL_PROGRAM_CONFIG_FILE)
                     .expect("Error creating global config file");
-                println!("Global config file created!");
 
-                Ok(configFileReturnValue {
-                    file: cf,
+                Ok(CONFIG_FILE_RETURN_VALUE {
+                    file: CF,
+                    fileFeedback: "Global config file was created!".to_string(),
                     status: true,
                 }) // Returning file and status
             }
