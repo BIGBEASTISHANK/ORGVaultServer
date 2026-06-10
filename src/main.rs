@@ -14,7 +14,7 @@ fn main() -> std::io::Result<()> {
     match RunAsRoot() {
         Ok(_) => {}
         Err(e) => {
-            println!("Error: {}", e);
+            println!("{0} {1}", "Error: ".red(), e);
             return Ok(());
         }
     }
@@ -29,13 +29,13 @@ fn main() -> std::io::Result<()> {
     let TOKIO_RT: tokio::runtime::Runtime = tokio::runtime::Runtime::new().unwrap();
 
     // Security check
-    println!("{}", "# Starting security checks...".red());
+    println!("{0}", "# Starting security checks...".red());
     match security::SecurityCheck() {
         Ok(_) => {
-            println!("{}", "  ## Security check passed!\n".green());
+            println!("{0}", "  ## Security check passed!\n".green());
         }
         Err(e) => {
-            println!("Error: {}", e);
+            println!("{0} {1}", "Error: ".red(), e);
             return Ok(());
         }
     }
@@ -43,7 +43,7 @@ fn main() -> std::io::Result<()> {
     // Starting feedback
     println!("-----------------------------------");
     println!(
-        "\n{} {}{}{} {} {}{}{}",
+        "\n{0} {1}{2}{3} {4} {5}{6}{7}",
         "Starting ORGVault web server on".blue(),
         SERVER_FEEDBACK_IP,
         SERVER_FEEDBACK_COLON,

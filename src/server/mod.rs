@@ -1,5 +1,4 @@
 pub mod webServer;
-use crate::CONFIG_FILE_RETURN_VALUE;
 use std::net::Ipv4Addr;
 
 // Server addr/port
@@ -8,10 +7,10 @@ pub const WEB_SERVER_PORT: u16 = 8020;
 pub const CLIENT_COMMUNICATION_PORT: u16 = 8040;
 
 // Config file checking / creation
-pub fn ConfigFileGetter() -> Result<CONFIG_FILE_RETURN_VALUE, std::io::Error> {
+pub fn ConfigFileGetter() -> Result<crate::CONFIG_FILE_RETURN_VALUE, std::io::Error> {
     return match std::fs::File::open(crate::GLOBAL_PROGRAM_CONFIG_FILE) {
         // Found file
-        Ok(CF) => Ok(CONFIG_FILE_RETURN_VALUE {
+        Ok(CF) => Ok(crate::CONFIG_FILE_RETURN_VALUE {
             file: CF,
             fileFeedback: "Global config file was found!".to_string(),
             status: true,
@@ -31,7 +30,7 @@ pub fn ConfigFileGetter() -> Result<CONFIG_FILE_RETURN_VALUE, std::io::Error> {
                 let CF: std::fs::File = std::fs::File::create(crate::GLOBAL_PROGRAM_CONFIG_FILE)
                     .expect("Error creating global config file");
 
-                Ok(CONFIG_FILE_RETURN_VALUE {
+                Ok(crate::CONFIG_FILE_RETURN_VALUE {
                     file: CF,
                     fileFeedback: "Global config file was created!".to_string(),
                     status: true,
