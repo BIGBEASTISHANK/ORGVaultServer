@@ -3,7 +3,6 @@ use std::net::Ipv4Addr;
 
 // Server addr/port
 pub const SERVER_ADDRESS: Ipv4Addr = Ipv4Addr::UNSPECIFIED;
-pub const WEB_SERVER_PORT: u16 = 8020;
 pub const CLIENT_COMMUNICATION_PORT: u16 = 8040;
 
 // Config file checking / creation

@@ -20,12 +20,10 @@ fn main() -> std::io::Result<()> {
     }
 
     // Variables
-    let SERVER_FEEDBACK_IP = server::SERVER_ADDRESS.to_string().red();
-    let SERVER_FEEDBACK_PORT_WEB = server::WEB_SERVER_PORT.to_string().red();
-    let SERVER_FEEDBACK_PORT_CLIENT = server::CLIENT_COMMUNICATION_PORT.to_string().red();
-    let SERVER_FEEDBACK_COLON: ColoredString = ":".blue();
+    let SERVER_FEEDBACK_IP = server::SERVER_ADDRESS.to_string();
+    let SERVER_FEEDBACK_WEB_BACKEND_PORT = server::webServer::WEB_SERVER_BACKEND_PORT.to_string();
+    let SERVER_FEEDBACK_CLIENT_COMMUNICATION_PORT = server::CLIENT_COMMUNICATION_PORT.to_string();
 
-    // Variable
     let TOKIO_RT: tokio::runtime::Runtime = tokio::runtime::Runtime::new().unwrap();
 
     // Security check
@@ -36,26 +34,40 @@ fn main() -> std::io::Result<()> {
         }
         Err(e) => {
             println!("{0} {1}", "Error: ".red(), e);
-            return Ok(());
+            std::process::exit(1);
         }
     }
 
-    // Starting feedback
-    println!("-----------------------------------");
+    // Feedback
     println!(
-        "\n{0} {1}{2}{3} {4} {5}{6}{7}",
-        "Starting ORGVault web server on".blue(),
+        "{0}",
+        "------------------------------------------------------------".bright_black()
+    );
+    println!(
+        "{0} {1}:{2} {3} {4}:{5}",
+        "▲ ORGVault Web back Server".cyan().bold(),
         SERVER_FEEDBACK_IP,
-        SERVER_FEEDBACK_COLON,
-        SERVER_FEEDBACK_PORT_WEB,
-        "| Client Communication:".blue(),
+        SERVER_FEEDBACK_WEB_BACKEND_PORT,
+        "| Client Communication:".bright_black(),
         SERVER_FEEDBACK_IP,
-        SERVER_FEEDBACK_COLON,
-        SERVER_FEEDBACK_PORT_CLIENT
+        SERVER_FEEDBACK_CLIENT_COMMUNICATION_PORT
+    );
+    println!(
+        "{0}",
+        "------------------------------------------------------------".bright_black()
     );
 
+    // Start frontend
+    let mut frontend = server::webServer::WebServerFrontendRunner()?;
+
     // Starting web server
-    return TOKIO_RT.block_on(server::webServer::WebServerRunner());
+    let TOKIO_RT_RUNNER = TOKIO_RT.block_on(server::webServer::WebServerBackendRunner());
+
+    // Kill frontend
+    let _ = frontend.kill();
+
+    // Return
+    return TOKIO_RT_RUNNER;
 }
 
 // RunAsRoot function

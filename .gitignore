@@ -2,3 +2,44 @@
 */Cargo.lock
 GlobalConfigTesting/
 /target/
+
+## Web server data
+# dependencies
+WebServerData/node_modules
+WebServerData/.pnp
+WebServerData/.pnp.*
+WebServerData/.yarn/*
+WebServerData/!.yarn/patches
+WebServerData/!.yarn/plugins
+WebServerData/!.yarn/releases
+WebServerData/!.yarn/versions
+
+# testing
+WebServerData/coverage
+
+# next.js
+WebServerData/.next/
+WebServerData/out/
+
+# production
+WebServerData/build
+
+# misc
+WebServerData/.DS_Store
+WebServerData/*.pem
+
+# debug
+WebServerData/npm-debug.log*
+WebServerData/yarn-debug.log*
+WebServerData/yarn-error.log*
+WebServerData/.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+WebServerData/.env*
+
+# vercel
+WebServerData/.vercel
+
+# typescript
+WebServerData/*.tsbuildinfo
+WebServerData/next-env.d.ts
