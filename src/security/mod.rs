@@ -1,15 +1,13 @@
 use crate::server;
 use colored::*;
 use rand::RngCore;
-use std::io::Write;
-use std::path::Path;
-use std::sync::atomic;
+use std::{io::Write, path::Path, sync::atomic};
 
 // Security check function
-pub fn SecurityCheck() -> Result<(), String> {
+pub fn VerifySecurityRequirements() -> Result<(), String> {
     // Config file exists
     println!("\t## Checking config file...");
-    if Path::new(crate::GLOBAL_PROGRAM_CONFIG_FILE).exists() {
+    if Path::new(&*crate::GLOBAL_PROGRAM_CONFIG_FILE).exists() {
         println!("\t\t### Config file exists!");
         crate::REBUILD_FRONTEND.swap(false, atomic::Ordering::SeqCst);
     } else {
@@ -18,7 +16,7 @@ pub fn SecurityCheck() -> Result<(), String> {
             "\t\t### Config file does not exist!",
             "Generating....".green()
         );
-        match server::ConfigFileGetter() {
+        match server::InitializeConfigFile() {
             Ok(DATA) => {
                 println!("\t\t### {}", DATA.fileFeedback);
                 drop(DATA.file);
@@ -35,7 +33,7 @@ pub fn SecurityCheck() -> Result<(), String> {
 
     // Checking encryption key file
     println!("\t## Checking encryption key file...");
-    if Path::new(crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION).exists() {
+    if Path::new(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION).exists() {
         println!("\t\t### Encryption key file exists!");
         crate::REBUILD_FRONTEND.swap(false, atomic::Ordering::SeqCst);
     } else {
@@ -59,7 +57,7 @@ pub fn SecurityCheck() -> Result<(), String> {
     }
 
     // Ok
-    return Ok(());
+    Ok(())
 }
 
 // GenerateConfigEncryptionKey function
@@ -68,7 +66,7 @@ fn GenerateConfigEncryptionKey() -> Result<(), String> {
 
     rand::thread_rng().fill_bytes(&mut key[..]);
 
-    let mut file = std::fs::File::create(crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION)
+    let mut file = std::fs::File::create(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION)
         .map_err(|e| e.to_string())?;
 
     file.write_all(&key).map_err(|e| e.to_string())?;

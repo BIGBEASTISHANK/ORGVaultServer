@@ -2,9 +2,7 @@
 
 use ORGVaultServer::{security, server};
 use colored::*;
-use std;
-use std::os::unix::process::CommandExt;
-use std::process::Command;
+use std::{os::unix::process::CommandExt, process::Command};
 use tokio;
 use users;
 
@@ -19,16 +17,9 @@ fn main() -> std::io::Result<()> {
         }
     }
 
-    // Variables
-    let SERVER_FEEDBACK_IP = server::SERVER_ADDRESS.to_string();
-    let SERVER_FEEDBACK_WEB_BACKEND_PORT = server::webServer::WEB_SERVER_BACKEND_PORT.to_string();
-    let SERVER_FEEDBACK_CLIENT_COMMUNICATION_PORT = server::CLIENT_COMMUNICATION_PORT.to_string();
-
-    let TOKIO_RT: tokio::runtime::Runtime = tokio::runtime::Runtime::new().unwrap();
-
     // Security check
     println!("{0}", "# Starting security checks...".red());
-    match security::SecurityCheck() {
+    match security::VerifySecurityRequirements() {
         Ok(_) => {
             println!("{0}", "  ## Security check passed!\n".green());
         }
@@ -39,6 +30,10 @@ fn main() -> std::io::Result<()> {
     }
 
     // Feedback
+    let SERVER_FEEDBACK_IP = server::SERVER_ADDRESS.to_string();
+    let SERVER_FEEDBACK_WEB_BACKEND_PORT = server::WEB_SERVER_BACKEND_PORT.to_string();
+    let SERVER_FEEDBACK_CLIENT_COMMUNICATION_PORT = server::CLIENT_COMMUNICATION_PORT.to_string();
+
     println!(
         "{0}",
         "------------------------------------------------------------".bright_black()
@@ -58,10 +53,11 @@ fn main() -> std::io::Result<()> {
     );
 
     // Start frontend
-    let mut frontend = server::webServer::WebServerFrontendRunner()?;
+    let mut frontend = server::webServer::RunWebServerFrontend()?;
 
     // Starting web server
-    let TOKIO_RT_RUNNER = TOKIO_RT.block_on(server::webServer::WebServerBackendRunner());
+    let TOKIO_RT: tokio::runtime::Runtime = tokio::runtime::Runtime::new().unwrap();
+    let TOKIO_RT_RUNNER = TOKIO_RT.block_on(server::webServer::RunWebServerBackend());
 
     // Kill frontend
     let _ = frontend.kill();
