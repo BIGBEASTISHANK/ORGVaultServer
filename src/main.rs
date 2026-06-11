@@ -57,13 +57,13 @@ fn main() -> std::io::Result<()> {
 
     // Starting web server
     let TOKIO_RT: tokio::runtime::Runtime = tokio::runtime::Runtime::new().unwrap();
-    let TOKIO_RT_RUNNER = TOKIO_RT.block_on(server::webServer::RunWebServerBackend());
+    let _ = TOKIO_RT.block_on(server::webServer::RunWebServerBackend());
 
     // Kill frontend
     let _ = frontend.kill();
 
     // Return
-    return TOKIO_RT_RUNNER;
+    Ok(())
 }
 
 // RunAsRoot function

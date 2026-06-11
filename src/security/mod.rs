@@ -1,7 +1,8 @@
 use crate::server;
 use colored::*;
-use rand::RngCore;
-use std::{io::Write, path::Path, sync::atomic};
+use std::{path::Path, sync::atomic};
+
+pub mod encryptionHandler;
 
 // Security check function
 pub fn VerifySecurityRequirements() -> Result<(), String> {
@@ -42,7 +43,7 @@ pub fn VerifySecurityRequirements() -> Result<(), String> {
             "\t\t### Encryption key file does not exists!",
             "Generating....".green()
         );
-        match GenerateConfigEncryptionKey() {
+        match encryptionHandler::GenerateConfigEncryptionKey() {
             Ok(_) => {
                 println!("\t\t### Encryption key file generated!");
             }
@@ -57,19 +58,5 @@ pub fn VerifySecurityRequirements() -> Result<(), String> {
     }
 
     // Ok
-    Ok(())
-}
-
-// GenerateConfigEncryptionKey function
-fn GenerateConfigEncryptionKey() -> Result<(), String> {
-    let mut key = [0u8; 32];
-
-    rand::thread_rng().fill_bytes(&mut key[..]);
-
-    let mut file = std::fs::File::create(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION)
-        .map_err(|e| e.to_string())?;
-
-    file.write_all(&key).map_err(|e| e.to_string())?;
-
     Ok(())
 }
