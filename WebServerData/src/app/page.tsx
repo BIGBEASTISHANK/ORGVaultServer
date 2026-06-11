@@ -13,7 +13,7 @@ export default function Home() {
             setLoading(true);
             setError("");
 
-            const res = await fetch("http://localhost:3100/api/test");
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/test`);
 
             if (!res.ok) {
                 throw new Error("Failed to fetch API");

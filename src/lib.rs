@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicBool};
 pub mod security;
 pub mod server;
 
-// Global variables
+// Constant variables
 pub const GLOBAL_PROGRAM_CONFIG_FILE: &str = if cfg!(debug_assertions) {
     "/run/media/ishank/Work/Projects/ORGVault/ORGVaultServer/GlobalConfigTesting/config.json"
 } else {
@@ -25,6 +25,7 @@ pub const WEB_FRONTEND_DATA_FILE: &str = if cfg!(debug_assertions) {
     "/run/media/ishank/Work/Projects/ORGVault/ORGVaultServer/WebServerData"
 };
 
+// Mutable variables
 pub static REBUILD_FRONTEND: AtomicBool = AtomicBool::new(true);
 
 // Structs

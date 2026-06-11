@@ -2,6 +2,7 @@ use crate::server;
 use actix_cors::Cors;
 use actix_web::{App, HttpServer, http, web};
 use actix_web::{HttpRequest, HttpResponse};
+use local_ip_address::local_ip;
 use serde_json::json;
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic;
@@ -42,6 +43,10 @@ pub fn WebServerFrontendRunner() -> std::io::Result<Child> {
         Command::new("yarn")
             .args(&["dev", "-p", &WEB_SERVER_FRONTEND_PORT.to_string()])
             .current_dir(crate::WEB_FRONTEND_DATA_FILE)
+            .env(
+                "NEXT_PUBLIC_API_URL",
+                format!("http://{0}:3100", local_ip().unwrap()),
+            )
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
             .spawn()
@@ -50,6 +55,10 @@ pub fn WebServerFrontendRunner() -> std::io::Result<Child> {
             Command::new("yarn")
                 .args(&["--silent", "build"])
                 .current_dir(crate::WEB_FRONTEND_DATA_FILE)
+                .env(
+                    "NEXT_PUBLIC_API_URL",
+                    format!("http://{0}:3100", local_ip().unwrap()),
+                )
                 .stdout(Stdio::inherit())
                 .stderr(Stdio::inherit())
                 .status()?;
@@ -63,6 +72,10 @@ pub fn WebServerFrontendRunner() -> std::io::Result<Child> {
                 &WEB_SERVER_FRONTEND_PORT.to_string(),
             ])
             .current_dir(crate::WEB_FRONTEND_DATA_FILE)
+            .env(
+                "NEXT_PUBLIC_API_URL",
+                format!("http://{0}:3100", local_ip().unwrap()),
+            )
             .stdout(Stdio::inherit())
             .stderr(Stdio::inherit())
             .spawn()
