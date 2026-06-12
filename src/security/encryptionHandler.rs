@@ -18,7 +18,7 @@ pub fn GenerateConfigEncryptionKey() -> Result<(), String> {
     };
 }
 
-// Encrypt function
+// Encrypt data function
 pub fn EncryptData(DATA: &[u8], KEY: &[u8]) -> Result<Vec<u8>, Error> {
     // Verifying key length
     if KEY.len() != 32 {
@@ -28,21 +28,41 @@ pub fn EncryptData(DATA: &[u8], KEY: &[u8]) -> Result<Vec<u8>, Error> {
         ));
     }
 
-    let CYPHER = Aes256Gcm::new_from_slice(KEY).map_err(|e| Error::new(ErrorKind::Other, e))?;
+    let CIPHER = Aes256Gcm::new_from_slice(KEY).map_err(|e| Error::new(ErrorKind::Other, e))?;
 
     // 96 bytes nonce
     let mut nonceBytes = [0u8; 12];
     OsRng.fill_bytes(&mut nonceBytes[..]);
     let NONCE = Nonce::from_slice(&nonceBytes[..]);
 
-    let CYPHER_TEXT = CYPHER
+    let CIPHER_TEXT = CIPHER
         .encrypt(NONCE, DATA)
         .map_err(|e| Error::new(ErrorKind::Other, format!("{:?}", e)))?;
 
     let mut output = Vec::new();
     output.extend_from_slice(&nonceBytes);
-    output.extend_from_slice(&CYPHER_TEXT);
+    output.extend_from_slice(&CIPHER_TEXT);
 
     // Ok
     Ok(output)
+}
+
+// Decrypt data function
+pub fn DecryptData(DATA: &[u8], KEY: &[u8]) -> Result<Vec<u8>, Error> {
+    // Verifying data byte length
+    if DATA.len() < 12 {
+        return Err(Error::new(
+            ErrorKind::InvalidData,
+            "Data length must be greater than 12 bytes",
+        ));
+    }
+
+    let CIPHER = Aes256Gcm::new_from_slice(KEY).map_err(|e| Error::new(ErrorKind::Other, e))?;
+
+    let (NONCE_BYTE, CIPHER_TEXT) = DATA.split_at(12);
+    let NONCE = Nonce::from_slice(NONCE_BYTE);
+
+    CIPHER
+        .decrypt(NONCE, CIPHER_TEXT)
+        .map_err(|e| Error::new(ErrorKind::Other, format!("{:?}", e)))
 }
