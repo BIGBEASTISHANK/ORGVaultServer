@@ -45,7 +45,34 @@ pub async fn RunWebServerBackend() -> Result<(), std::io::Error> {
 
 // Run web frontend server
 pub fn RunWebServerFrontend() -> std::io::Result<Child> {
+    // Checking if node_modules exists
+    if !std::path::Path::new(&*crate::WEB_FRONTEND_DATA_FILE)
+        .join("node_modules")
+        .exists()
+    {
+        // Log
+        println!(
+            "\n{0} were not installed. {1}----------",
+            "node_modules/".yellow(),
+            "Installing node_modules...\n".green()
+        );
+        // Installing node_modules
+        Command::new("yarn")
+            .args(&["install"])
+            .current_dir(&*crate::WEB_FRONTEND_DATA_FILE)
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .status()?;
+    }
+
     if cfg!(debug_assertions) {
+        // Log
+        println!(
+            "\n{0}----------",
+            "Running frontend in debug mode...\n".green()
+        );
+
+        // Running in debug mode
         Command::new("yarn")
             .args(&["dev", "-p", &server::WEB_SERVER_FRONTEND_PORT.to_string()])
             .current_dir(&*crate::WEB_FRONTEND_DATA_FILE)
@@ -58,6 +85,10 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
             .spawn()
     } else {
         if crate::rebuildFrontendStatus.load(atomic::Ordering::SeqCst) {
+            // Log
+            println!("\n{0}----------", "Building frontend...\n".green());
+
+            // Building frontend
             Command::new("yarn")
                 .args(&["--silent", "build"])
                 .current_dir(&*crate::WEB_FRONTEND_DATA_FILE)
@@ -76,6 +107,13 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
                 })?;
         }
 
+        // Log
+        println!(
+            "\n{0}----------",
+            "Running frontend in release mode...\n".green()
+        );
+
+        // Running frontend in release mode
         Command::new("yarn")
             .args(&[
                 "--silent",
