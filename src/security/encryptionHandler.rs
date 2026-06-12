@@ -1,5 +1,6 @@
 use aes_gcm::aead::{Aead, KeyInit, OsRng};
 use aes_gcm::{Aes256Gcm, Nonce};
+use colored::*;
 use rand::RngCore;
 use std::io::{Error, ErrorKind, Write};
 
@@ -28,7 +29,12 @@ pub fn EncryptData(DATA: &[u8], KEY: &[u8]) -> Result<Vec<u8>, Error> {
         ));
     }
 
-    let CIPHER = Aes256Gcm::new_from_slice(KEY).map_err(|e| Error::new(ErrorKind::Other, e))?;
+    let CIPHER = Aes256Gcm::new_from_slice(KEY).map_err(|e| {
+        Error::new(
+            ErrorKind::Other,
+            format!("{} {:?}", "Error creating cipher:".red(), e),
+        )
+    })?;
 
     // 96 bytes nonce
     let mut nonceBytes = [0u8; 12];
@@ -62,7 +68,10 @@ pub fn DecryptData(DATA: &[u8], KEY: &[u8]) -> Result<Vec<u8>, Error> {
     let (NONCE_BYTE, CIPHER_TEXT) = DATA.split_at(12);
     let NONCE = Nonce::from_slice(NONCE_BYTE);
 
-    CIPHER
-        .decrypt(NONCE, CIPHER_TEXT)
-        .map_err(|e| Error::new(ErrorKind::Other, format!("{:?}", e)))
+    CIPHER.decrypt(NONCE, CIPHER_TEXT).map_err(|e| {
+        Error::new(
+            ErrorKind::Other,
+            format!("{} {:?}", "Error decrypting data:".red(), e),
+        )
+    })
 }
