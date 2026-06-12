@@ -10,7 +10,8 @@ pub fn VerifySecurityRequirements() -> Result<(), String> {
     println!("\t## Checking config file...");
     if Path::new(&*crate::GLOBAL_PROGRAM_CONFIG_FILE).exists() {
         println!("\t\t### Config file exists!");
-        crate::REBUILD_FRONTEND.swap(false, atomic::Ordering::SeqCst);
+        crate::rebuildFrontendStatus.swap(false, atomic::Ordering::SeqCst);
+        crate::isInitialized.swap(true, atomic::Ordering::SeqCst);
     } else {
         println!(
             "{0} {1}",
@@ -36,7 +37,8 @@ pub fn VerifySecurityRequirements() -> Result<(), String> {
     println!("\t## Checking encryption key file...");
     if Path::new(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION).exists() {
         println!("\t\t### Encryption key file exists!");
-        crate::REBUILD_FRONTEND.swap(false, atomic::Ordering::SeqCst);
+        crate::rebuildFrontendStatus.swap(false, atomic::Ordering::SeqCst);
+        crate::isInitialized.swap(true, atomic::Ordering::SeqCst);
     } else {
         println!(
             "{0} {1}",

@@ -39,7 +39,8 @@ pub static WEB_FRONTEND_DATA_FILE: LazyLock<String> = LazyLock::new(|| {
 });
 
 // Mutable variables
-pub static REBUILD_FRONTEND: AtomicBool = AtomicBool::new(true);
+pub static rebuildFrontendStatus: AtomicBool = AtomicBool::new(true);
+pub static isInitialized: AtomicBool = AtomicBool::new(false);
 
 // Structs
 pub struct ConfigFileReturnValue {

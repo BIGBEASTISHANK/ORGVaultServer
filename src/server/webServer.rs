@@ -1,6 +1,6 @@
 use crate::server;
 use actix_cors::Cors;
-use actix_web::{App, HttpRequest, HttpResponse, HttpServer, http, web};
+use actix_web::{App, HttpResponse, HttpServer, http, web};
 use local_ip_address::local_ip;
 use serde_json::json;
 use std::{
@@ -49,7 +49,7 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
             .stderr(Stdio::inherit())
             .spawn()
     } else {
-        if crate::REBUILD_FRONTEND.load(atomic::Ordering::SeqCst) {
+        if crate::rebuildFrontendStatus.load(atomic::Ordering::SeqCst) {
             Command::new("yarn")
                 .args(&["--silent", "build"])
                 .current_dir(&*crate::WEB_FRONTEND_DATA_FILE)
@@ -80,16 +80,18 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
     }
 }
 
-// APIEndpoint config function
+// Configuring API endpoints
 fn ConfigureAPIEndpoints(cfg: &mut web::ServiceConfig) {
     cfg.route("/api/ping", web::get().to(HandlePingEndpoint));
-    cfg.route("/api/test", web::get().to(HandleTestEndpoint));
+    cfg.route(
+        "/api/initializedStatus",
+        web::get().to(HandleInitializedStatusEndpoint),
+    );
 }
 
-// APIEndpoint ping function
+// Handeling ping endpoint
 async fn HandlePingEndpoint() -> HttpResponse {
     let start = Instant::now();
-
     let response_time_ms = start.elapsed().as_millis();
 
     HttpResponse::Ok().json(json!({
@@ -98,7 +100,12 @@ async fn HandlePingEndpoint() -> HttpResponse {
     }))
 }
 
-// APIEndpoint test function
-async fn HandleTestEndpoint(_req: HttpRequest) -> HttpResponse {
-    HttpResponse::Ok().json(json!({ "message": "Hello World" }))
+// Handeling initialized status endpoint
+async fn HandleInitializedStatusEndpoint() -> HttpResponse {
+    println!("isInitialized: {:?}", crate::isInitialized.load(atomic::Ordering::SeqCst));
+    if crate::isInitialized.load(atomic::Ordering::SeqCst) {
+        return HttpResponse::Ok().finish();
+    } else {
+        return HttpResponse::NotImplemented().finish();
+    }
 }
