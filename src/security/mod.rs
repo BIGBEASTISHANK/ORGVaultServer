@@ -57,7 +57,7 @@ pub fn VerifySecurityRequirements() -> Result<(), String> {
                 return Err(format!(
                     "{0} {1}",
                     "Error generating encryption key file: ".red(),
-                    e.red()
+                    e
                 ));
             }
         };

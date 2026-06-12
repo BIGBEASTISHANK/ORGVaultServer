@@ -5,18 +5,27 @@ use rand::RngCore;
 use std::io::{Error, ErrorKind, Write};
 
 // GenerateConfigEncryptionKey function
-pub fn GenerateConfigEncryptionKey() -> Result<(), String> {
+pub fn GenerateConfigEncryptionKey() -> Result<(), Error> {
     let mut key = [0u8; 32];
 
     rand::thread_rng().fill_bytes(&mut key[..]);
 
-    let mut file = std::fs::File::create(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION)
-        .map_err(|e| e.to_string())?;
+    let mut file =
+        std::fs::File::create(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION).map_err(|e| {
+            Error::new(
+                ErrorKind::Other,
+                format!("{} {:?}", "Error creating key file:".red(), e),
+            )
+        })?;
 
-    match file.write_all(&key).map_err(|e| e.to_string()) {
-        Ok(_) => return Ok(()),
-        Err(e) => return Err(e),
-    };
+    file.write_all(&key).map_err(|e| {
+        Error::new(
+            ErrorKind::Other,
+            format!("{} {:?}", "Error writing key file:".red(), e),
+        )
+    })?;
+
+    Ok(())
 }
 
 // Encrypt data function
