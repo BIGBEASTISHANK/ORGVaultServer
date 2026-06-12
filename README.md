@@ -22,9 +22,9 @@ ORGVault is a cross platform desktop application designed to provide organizatio
 
 ## Architecture Overview
 
-- **UI:** Vanilla HTML, CSS & JavaScript with the help of Actix Web to create control panel. 
+- **UI:** Based on `next.js` with `tailwindcss` for design ran with the help of rust.
 - **Async Runtime:** Tokio runtime (integrated within Actix Web) handles all asynchronous operations.
-- **API Layer:** Actix Web's api methods will be called to communicate with apis. 
+- **API Layer:** Actix Web's backend api methods will be called to communicate with frontend. 
 - **Data Storage:** Encrypted JSON document manages metadata, audit logs, and file encryption keys alongside document storage.
 
 ---
@@ -36,3 +36,17 @@ ORGVault is a cross platform desktop application designed to provide organizatio
 - **Access Control:** Strict role-based access ensures only authorized users can view or modify documents.
 - **Ransomware Defense:** Versioning and immutable backups guard against malicious data loss.
 - **Network Security:** Sync communications are limited to LAN and protected by MAC address authentication to prevent unauthorized access.
+
+---
+
+## Setup
+### Prerequisites
+- Rust
+- Cargo
+- Yarn
+- Node.js
+
+### Installation
+1. Clone the repository
+2. Navigate to the project directory
+3. Run `cargo run`
