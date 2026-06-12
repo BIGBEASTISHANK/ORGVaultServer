@@ -1,5 +1,10 @@
 pub mod webServer;
-use std::{io::Write, net::Ipv4Addr};
+use std::{
+    io::{Read, Write},
+    net::Ipv4Addr,
+};
+
+use crate::security::encryptionHandler::EncryptData;
 
 // Server addr/port
 pub const SERVER_ADDRESS: Ipv4Addr = Ipv4Addr::UNSPECIFIED;
@@ -68,13 +73,20 @@ pub fn InitializeConfigFile(
             password: PASSWORD,
         }],
     };
-
+    
     // Converting to JSON
     let JSON = serde_json::to_string_pretty(&CONFIG_FILE_DATA)
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
 
+    let mut keyFile = std::fs::File::open(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION)?;
+
+    let mut keyFileDataBuffer = Vec::new();
+    keyFile.read_to_end(&mut keyFileDataBuffer)?;
+
+    let ENCRYPTED_DATA = EncryptData(JSON.as_bytes(), &keyFileDataBuffer);
+
     // Writing to file
-    configFile.write_all(JSON.as_bytes())?;
+    configFile.write_all(ENCRYPTED_DATA?.as_slice())?;
 
     // Returning
     Ok(())
