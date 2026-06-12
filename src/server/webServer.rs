@@ -32,7 +32,13 @@ pub async fn RunWebServerBackend() -> Result<(), std::io::Error> {
         // Configure API endpoint
         App::new().wrap(CORS).configure(ConfigureAPIEndpoints)
     })
-    .bind((server::SERVER_ADDRESS, server::WEB_SERVER_BACKEND_PORT))?
+    .bind((server::SERVER_ADDRESS, server::WEB_SERVER_BACKEND_PORT))
+    .map_err(|e| {
+        std::io::Error::new(
+            std::io::ErrorKind::Other,
+            format!("{} {:?}", "Error binding server and port:".red(), e),
+        )
+    })?
     .run()
     .await;
 }
@@ -61,7 +67,13 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
                 )
                 .stdout(Stdio::inherit())
                 .stderr(Stdio::inherit())
-                .status()?;
+                .status()
+                .map_err(|e| {
+                    std::io::Error::new(
+                        std::io::ErrorKind::Other,
+                        format!("{} {:?}", "Frontend build/start error:".red(), e),
+                    )
+                })?;
         }
 
         Command::new("yarn")

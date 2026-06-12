@@ -80,7 +80,12 @@ fn RunAsRoot() -> std::io::Result<()> {
     );
 
     let SUDO_CONVERTION_ERROR: std::io::Error = Command::new("sudo")
-        .arg(std::env::current_exe()?)
+        .arg(std::env::current_exe().map_err(|e| {
+            std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!("{} {:?}", "Error getting current exe:".red(), e),
+            )
+        })?)
         .args(std::env::args().skip(1))
         .exec();
 
