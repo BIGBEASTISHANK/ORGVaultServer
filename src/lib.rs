@@ -1,5 +1,6 @@
 #![allow(nonstandard_style)]
 
+use serde::Serialize;
 use std::{
     env,
     sync::{LazyLock, atomic::AtomicBool},
@@ -47,4 +48,17 @@ pub struct ConfigFileReturnValue {
     pub file: std::fs::File,
     pub fileFeedback: String,
     pub status: bool,
+}
+
+// Server config file data
+#[derive(Serialize)]
+pub struct ServerConfigFile {
+    pub adminDetails: Vec<SCFAdminDetails>,
+}
+
+#[derive(Serialize)]
+pub struct SCFAdminDetails {
+    pub macAddress: String,
+    pub username: String,
+    pub password: String,
 }

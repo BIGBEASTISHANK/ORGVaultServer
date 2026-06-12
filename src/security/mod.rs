@@ -18,7 +18,7 @@ pub fn VerifySecurityRequirements() -> Result<(), String> {
             "\t\t### Config file does not exist!",
             "Generating....".green()
         );
-        match server::InitializeConfigFile() {
+        match server::CreateReturnConfigFile() {
             Ok(DATA) => {
                 println!("\t\t### {}", DATA.fileFeedback);
                 drop(DATA.file);

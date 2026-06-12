@@ -1,7 +1,9 @@
 use crate::server;
 use actix_cors::Cors;
 use actix_web::{App, HttpResponse, HttpServer, http, web};
+use colored::*;
 use local_ip_address::local_ip;
+use serde::Deserialize;
 use serde_json::json;
 use std::{
     process::{Child, Command, Stdio},
@@ -87,25 +89,56 @@ fn ConfigureAPIEndpoints(cfg: &mut web::ServiceConfig) {
         "/api/initializedStatus",
         web::get().to(HandleInitializedStatusEndpoint),
     );
+    cfg.route(
+        "/api/initializeServer",
+        web::post().to(HandleInitializeServerEndpoint),
+    );
 }
 
-// Handeling ping endpoint
+// Handling ping endpoint
 async fn HandlePingEndpoint() -> HttpResponse {
-    let start = Instant::now();
-    let response_time_ms = start.elapsed().as_millis();
+    let START = Instant::now();
+    let RESPONSE_TIME_MS = START.elapsed().as_millis();
 
     HttpResponse::Ok().json(json!({
         "message": "pong",
-        "response_time_ms": response_time_ms
+        "RESPONSE_TIME_MS": RESPONSE_TIME_MS
     }))
 }
 
-// Handeling initialized status endpoint
+// Handling initialized status endpoint
 async fn HandleInitializedStatusEndpoint() -> HttpResponse {
-    println!("isInitialized: {:?}", crate::isInitialized.load(atomic::Ordering::SeqCst));
     if crate::isInitialized.load(atomic::Ordering::SeqCst) {
         return HttpResponse::Ok().finish();
     } else {
         return HttpResponse::NotImplemented().finish();
     }
+}
+
+// Handling initialize server endpoint
+#[derive(Deserialize)]
+struct InitializeRequest {
+    adminMacAddress: String,
+    username: String,
+    password: String,
+}
+
+async fn HandleInitializeServerEndpoint(req: web::Json<InitializeRequest>) -> HttpResponse {
+    // Safely extract headers without unwrapping
+    let MAC_ADDRESS = &req.adminMacAddress;
+    let USERNAME = &req.username;
+    let PASSWORD = &req.password;
+
+    println!("macAddress: {:?}", MAC_ADDRESS);
+    println!("username: {:?}", USERNAME);
+    println!("password: {:?}", PASSWORD);
+
+    // Initialize config file
+    match server::InitializeConfigFile(MAC_ADDRESS.clone(), USERNAME.clone(), PASSWORD.clone()) {
+        Ok(_) => return HttpResponse::Ok().finish(),
+        Err(e) => {
+            println!("{0} {1}", "Error: ".red(), e);
+            return HttpResponse::InternalServerError().finish();
+        }
+    };
 }
