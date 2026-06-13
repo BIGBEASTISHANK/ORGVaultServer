@@ -3,19 +3,21 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-export default function InitializationLogin() {
+export default function InitializationLogin({ isRegistered, isAuthenticated }: { isRegistered: any, isAuthenticated: any }) {
     const [adminMacAddress, setAdminMacAddress] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    async function handleFormSubmission(e: React.FormEvent<HTMLFormElement>) {
+    async function handleFormSubmission(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
         setLoading(true);
 
+        // Calling api
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/initializeServer`, {
+            const API_RESPONSE = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/backend/initializeServer`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -26,13 +28,19 @@ export default function InitializationLogin() {
                     password,
                 }),
             });
+
+            if (API_RESPONSE.ok) {
+                isAuthenticated(true);
+                isRegistered(true);
+            }
         } catch (e) {
-            console.error(e);
+            setError("Their was error registering the server");
         } finally {
             setLoading(false);
         }
     }
 
+    // Main component
     return (
         <div className="min-h-screen bg-[#0a0f1c] flex items-center justify-center px-6 relative overflow-hidden">
             {/* Background Glow */}
@@ -89,6 +97,9 @@ export default function InitializationLogin() {
                                 required
                             />
                         </div>
+
+                        {/* Error */}
+                        {error && <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</div>}
 
                         {/* Submit */}
                         <motion.button

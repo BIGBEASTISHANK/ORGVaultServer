@@ -77,7 +77,7 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
             .args(&["dev", "-p", &server::WEB_SERVER_FRONTEND_PORT.to_string()])
             .current_dir(&*crate::WEB_FRONTEND_DATA_FILE)
             .env(
-                "NEXT_PUBLIC_API_URL",
+                "NEXT_PUBLIC_BACKEND_API_URL",
                 format!("http://{0}:3100", local_ip().unwrap()),
             )
             .stdout(Stdio::inherit())
@@ -93,7 +93,7 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
                 .args(&["--silent", "build"])
                 .current_dir(&*crate::WEB_FRONTEND_DATA_FILE)
                 .env(
-                    "NEXT_PUBLIC_API_URL",
+                    "NEXT_PUBLIC_BACKEND_API_URL",
                     format!("http://{0}:3100", local_ip().unwrap()),
                 )
                 .stdout(Stdio::inherit())
@@ -123,7 +123,7 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
             ])
             .current_dir(&*crate::WEB_FRONTEND_DATA_FILE)
             .env(
-                "NEXT_PUBLIC_API_URL",
+                "NEXT_PUBLIC_BACKEND_API_URL",
                 format!("http://{0}:3100", local_ip().unwrap()),
             )
             .stdout(Stdio::inherit())
@@ -134,13 +134,13 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
 
 // Configuring API endpoints
 fn ConfigureAPIEndpoints(cfg: &mut web::ServiceConfig) {
-    cfg.route("/api/ping", web::get().to(HandlePingEndpoint));
+    cfg.route("/api/backend/ping", web::get().to(HandlePingEndpoint));
     cfg.route(
-        "/api/initializedStatus",
+        "/api/backend/initializedStatus",
         web::get().to(HandleInitializedStatusEndpoint),
     );
     cfg.route(
-        "/api/initializeServer",
+        "/api/backend/initializeServer",
         web::post().to(HandleInitializeServerEndpoint),
     );
 }

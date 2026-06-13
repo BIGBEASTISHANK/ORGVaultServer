@@ -6,45 +6,79 @@ import LoadingScreen from "@/utilities/LoadingScreen";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-    const [isInitialized, setIsInitialized] = useState(false);
-    const [verifyingHome, setVerifyingHome] = useState(true);
+    // State
+    const [isCheckingInit, setIsCheckingInit] = useState(true);
+    const [initCheckError, setInitCheckError] = useState("");
 
+    const [needsInitialization, setNeedsInitialization] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+    // Checking initialization
     useEffect(() => {
-        // Function to check if initialized
-        async function checkInitializedStatus() {
+        async function checkInitialization() {
             try {
-                // Calling api
-                const apiResponse = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/initializedStatus`,
-                    {
-                        method: "GET",
-                    },
-                );
+                const API_RESPONSE = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/backend/initializedStatus`);
 
-                // Wait for 3 seconds
-                await new Promise((resolve) => setTimeout(resolve, 3000));
+                await new Promise((r) => setTimeout(r, 3000));
 
-                if (apiResponse.ok) {
-                    setVerifyingHome(false);
-                    setIsInitialized(true);
+                if (API_RESPONSE.ok) {
+                    setNeedsInitialization(false);
                 }
-            } catch (e) {
-                console.log(e);
+            } catch (err) {
+                setInitCheckError("Internal server error");
             } finally {
-                setVerifyingHome(false);
+                setIsCheckingInit(false);
             }
         }
 
-        // Calling API
-        checkInitializedStatus();
+        checkInitialization();
     }, []);
 
-    // Main diaplay
-    return verifyingHome ? (
-        <LoadingScreen />
-    ) : isInitialized ? (
-        <NormalLogin />
-    ) : (
-        <InitializationLogin />
-    );
+    // Checking authentication
+    useEffect(() => {
+        async function checkAuthSession() {
+            if (needsInitialization) {
+                setIsCheckingAuth(false);
+                return;
+            }
+
+            try {
+                // const API_RESPONSE = await fetch("/api/auth/verify", {
+                //     method: "GET",
+                //     credentials: "include",
+                // });
+
+                // if (API_RESPONSE.ok) {
+                if(false) {
+                    setIsAuthenticated(true);
+                }
+            } catch (err) {
+                setIsAuthenticated(false);
+            } finally {
+                setIsCheckingAuth(false);
+            }
+        }
+
+        checkAuthSession();
+    }, [needsInitialization]);
+
+    // Loading State
+    if (isCheckingInit) {
+        return <LoadingScreen error={initCheckError} />;
+    }
+
+    // Initializing form
+    if (needsInitialization && !isAuthenticated) {
+        return <InitializationLogin isRegistered={setNeedsInitialization} isAuthenticated={setIsAuthenticated} />;
+    }
+
+    // Authenticated
+    if (!isAuthenticated && !needsInitialization) {
+        return <NormalLogin isAuthenticated={setIsAuthenticated} />;
+    }
+
+    //  Normal Page
+    return <div>App Home</div>;
 }

@@ -2,6 +2,7 @@ pub mod webServer;
 use std::{
     io::{Read, Write},
     net::Ipv4Addr,
+    sync::atomic::Ordering,
 };
 
 use crate::security::encryptionHandler::EncryptData;
@@ -73,7 +74,7 @@ pub fn InitializeConfigFile(
             password: PASSWORD,
         }],
     };
-    
+
     // Converting to JSON
     let JSON = serde_json::to_string_pretty(&CONFIG_FILE_DATA)
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
@@ -87,6 +88,9 @@ pub fn InitializeConfigFile(
 
     // Writing to file
     configFile.write_all(ENCRYPTED_DATA?.as_slice())?;
+
+    // Setting initialized state
+    crate::isInitialized.swap(true, Ordering::SeqCst);
 
     // Returning
     Ok(())
