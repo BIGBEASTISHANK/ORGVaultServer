@@ -162,4 +162,8 @@ fn ConfigureAPIEndpoints(cfg: &mut web::ServiceConfig) {
         "/api/developer/seeConfigFile",
         web::get().to(HandleDeveloperSeeConfigFileEndpoint),
     );
+    cfg.route(
+        "/api/developer/currentAdminDetails",
+        web::post().to(HandleCurrentAdminDetailsEndpoint),
+    );
 }

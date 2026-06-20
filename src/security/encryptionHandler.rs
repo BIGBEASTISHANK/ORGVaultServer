@@ -80,11 +80,11 @@ pub fn ConfigEncryptionKeyHash() -> Result<String, ()> {
     let COMMAND_OUTPUT = String::from_utf8(COMMAND_OUTPUT).unwrap();
     let HASH_OUTPUT: String = match COMMAND_OUTPUT.split_whitespace().next() {
         Some(HASH) => String::from(HASH),
-        _ => "None".to_string(),
+        _ => "".to_string(),
     };
 
     // Error
-    if HASH_OUTPUT == "None" {
+    if HASH_OUTPUT.is_empty() {
         return Err(());
     }
 
