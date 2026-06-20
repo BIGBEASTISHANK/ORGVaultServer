@@ -66,12 +66,9 @@ export default function NormalLogin({ isAuthenticated }: { isAuthenticated: any 
 
     // Main component
     return (
-        <div className="min-h-screen bg-[#0a0f1c] flex items-center justify-center px-6 relative overflow-hidden">
-            {/* Background Glow */}
-            <div className="absolute w-[600px] h-[600px] bg-[#1793d1]/20 blur-[150px] rounded-full" />
-
+        <div className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="relative z-10 w-full max-w-md">
-                <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+                <div className="bg-black/[0.05] backdrop-blur-xl inset-shadow-white/20 inset-shadow-2xs shadow-white/20 shadow-lg rounded-3xl p-8">
                     {/* Header */}
                     <div className="mb-8">
                         <h1 className="text-3xl font-bold text-white">Login to server</h1>

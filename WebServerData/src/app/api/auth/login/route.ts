@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
+                name: "_",
                 macAddress: MAC_ADDRESS,
                 username: USERNAME,
                 password: PASSWORD,
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ response: BACKEND_API_RESPONSE_DATA.response }, { status: BACKEND_API_RESPONSE.status });
         }
     } catch (e) {
+        console.log("Server error: ", e);
         return NextResponse.json({ response: `Internal server error` }, { status: 500 });
     }
 

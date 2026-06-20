@@ -2,20 +2,16 @@
 
 import { motion } from "framer-motion";
 
-export default function LoadingScreen({error}: {error: string}) {
+export default function LoadingScreen({ error }: { error: string }) {
     const hasError = Boolean(error);
 
     return (
-        <div className="h-screen w-full flex items-center justify-center bg-[#0b0f17] relative overflow-hidden">
-            {/* subtle glow background */}
-            <div className="absolute w-[500px] h-[500px] bg-[#0f5fff] opacity-20 blur-[120px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-
+        <div className="h-screen w-full flex items-center justify-center relative overflow-hidden">
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className="relative flex flex-col items-center gap-6 px-10 py-10 rounded-2xl 
-                   bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl"
+                className="relative flex flex-col items-center gap-6 px-10 py-10 rounded-2xl bg-black/[0.05] backdrop-blur-xl inset-shadow-white/20 inset-shadow-2xs shadow-white/20 shadow-md p-8"
             >
                 {/* Spinner or Error */}
                 {!hasError ? (

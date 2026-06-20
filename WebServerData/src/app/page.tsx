@@ -2,6 +2,7 @@
 
 import InitializationLogin from "@/components/InitializationLogin";
 import NormalLogin from "@/components/NormalLogin";
+import ProfileBar from "@/components/ProfileBar";
 import LoadingScreen from "@/utilities/LoadingScreen";
 import { useEffect, useState } from "react";
 
@@ -79,5 +80,12 @@ export default function Home() {
     }
 
     //  Normal Page
-    return <div>App Home</div>;
+    return (
+        <div className="flex gap-5 p-5 h-screen w-screen">
+            <div className="h-full w-[30rem]">
+                <ProfileBar />
+            </div>
+            <div className="w-full">hi</div>
+        </div>
+    );
 }
