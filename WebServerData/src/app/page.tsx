@@ -16,6 +16,9 @@ export default function Home() {
 
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
+    const [logoutError, setLogoutError] = useState("");
+    const [loggingOut, setLoggingOut] = useState(false);
+
     // Checking initialization
     useEffect(() => {
         async function checkInitialization() {
@@ -64,6 +67,23 @@ export default function Home() {
         checkAuthSession();
     }, [needsInitialization]);
 
+    // Logout
+    async function logout() {
+        try {
+            setLoggingOut(true);
+
+            const API_RESPONSE = await fetch("/api/auth/logout");
+
+            if (API_RESPONSE.ok) {
+                setIsAuthenticated(false);
+            }
+        } catch (err) {
+            setLogoutError("Internal server error");
+        } finally {
+            setLoggingOut(false);
+        }
+    }
+
     // Loading State
     if (isCheckingInit || isCheckingAuth) {
         return <LoadingScreen error={initCheckError} />;
@@ -83,7 +103,7 @@ export default function Home() {
     return (
         <div className="flex gap-5 p-5 h-screen w-screen">
             <div className="h-full w-[30rem]">
-                <ProfileBar />
+                <ProfileBar logoutFunction={logout} logoutError={logoutError} loggingOut={loggingOut} />
             </div>
             <div className="w-full">hi</div>
         </div>

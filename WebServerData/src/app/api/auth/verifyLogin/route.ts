@@ -18,8 +18,7 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json(
             {
-                response: "Success",
-                adminMacAddress: DECODED.MAC_ADDRESS,
+                response: DECODED.MAC_ADDRESS,
             },
             { status: 200 },
         );

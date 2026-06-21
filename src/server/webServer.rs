@@ -1,11 +1,12 @@
 use crate::{
-    security,
+    security::{self, encryptionHandler},
     server::{self, webServerEndpoints::*},
 };
 use actix_cors::Cors;
-use actix_web::{App, HttpServer, http, web};
+use actix_web::{App, HttpResponse, HttpServer, http, web};
 use colored::*;
 use local_ip_address::local_ip;
+use serde_json::json;
 use std::{
     collections::HashMap,
     process::{Child, Command, Stdio},
@@ -159,11 +160,30 @@ fn ConfigureAPIEndpoints(cfg: &mut web::ServiceConfig) {
         web::post().to(HandleLoginVerificationEndpoint),
     );
     cfg.route(
+        "/api/backend/currentAdminDetails",
+        web::post().to(HandleCurrentAdminDetailsEndpoint),
+    );
+
+    // Developer only endpoints
+    cfg.route(
         "/api/developer/seeConfigFile",
         web::get().to(HandleDeveloperSeeConfigFileEndpoint),
     );
-    cfg.route(
-        "/api/developer/currentAdminDetails",
-        web::post().to(HandleCurrentAdminDetailsEndpoint),
-    );
+}
+
+// Handling developer see config file endpoint
+pub async fn HandleDeveloperSeeConfigFileEndpoint() -> HttpResponse {
+    if !cfg!(debug_assertions) {
+        return HttpResponse::Unauthorized().finish();
+    }
+
+    if let Ok(data) = encryptionHandler::DecryptConfigData() {
+        return HttpResponse::Ok().json(json!(data));
+    }
+
+    if let Err(E) = encryptionHandler::DecryptConfigData() {
+        return HttpResponse::InternalServerError().json(json!({"response": E.to_string()}));
+    }
+
+    HttpResponse::NotImplemented().finish()
 }

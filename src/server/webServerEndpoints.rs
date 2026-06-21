@@ -1,4 +1,3 @@
-use crate::security::encryptionHandler;
 use crate::{security, server};
 use actix_web::HttpResponse;
 use actix_web::web;
@@ -139,7 +138,6 @@ pub async fn HandleLoginVerificationEndpoint(
 pub struct CurrentAdminDetailsRequest {
     pub macAddress: String,
     pub keyBinHash: String,
-    pub jwtVerified: bool,
 }
 
 #[derive(Serialize)]
@@ -149,18 +147,13 @@ pub struct CurrentAdminDetails {
     pub username: String,
 }
 
+// Handles the current admin details endpoint
 pub async fn HandleCurrentAdminDetailsEndpoint(
     req: web::Json<CurrentAdminDetailsRequest>,
 ) -> HttpResponse {
     // Getting req data
     let MAC_ADDRESS = &req.macAddress;
     let KEY_BIN_HASH = &req.keyBinHash;
-    let JWT_VERIFIED = req.jwtVerified;
-
-    // Verifying JWT
-    if !JWT_VERIFIED {
-        return HttpResponse::Unauthorized().json(json!({"response": "Invalid JWT"}));
-    }
 
     // Verifying hash
     if let Ok(ACTUAL_KEY_BIN_HASH) = security::encryptionHandler::ConfigEncryptionKeyHash() {
@@ -206,21 +199,4 @@ pub async fn HandleCurrentAdminDetailsEndpoint(
         "response": "Success",
         "response": json!(ADMIN_DETAILS),
     }));
-}
-
-// Handling developer see config file endpoint
-pub async fn HandleDeveloperSeeConfigFileEndpoint() -> HttpResponse {
-    if !cfg!(debug_assertions) {
-        return HttpResponse::Unauthorized().finish();
-    }
-
-    if let Ok(data) = encryptionHandler::DecryptConfigData() {
-        return HttpResponse::Ok().json(json!(data));
-    }
-
-    if let Err(E) = encryptionHandler::DecryptConfigData() {
-        return HttpResponse::InternalServerError().json(json!({"response": E.to_string()}));
-    }
-
-    HttpResponse::NotImplemented().finish()
 }
