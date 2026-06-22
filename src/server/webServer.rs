@@ -82,7 +82,8 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
             .status()?;
     }
 
-    if cfg!(debug_assertions) {
+    // if cfg!(debug_assertions) {
+    if false {
         // Log
         println!(
             "\n{0}----------",
@@ -163,6 +164,10 @@ fn ConfigureAPIEndpoints(cfg: &mut web::ServiceConfig) {
         "/api/backend/currentAdminDetails",
         web::post().to(HandleCurrentAdminDetailsEndpoint),
     );
+    cfg.route(
+        "/api/backend/updateAdminPassword",
+        web::post().to(HandleUpdateAdminPasswordEndpoint),
+    );
 
     // Developer only endpoints
     cfg.route(
@@ -174,16 +179,33 @@ fn ConfigureAPIEndpoints(cfg: &mut web::ServiceConfig) {
 // Handling developer see config file endpoint
 pub async fn HandleDeveloperSeeConfigFileEndpoint() -> HttpResponse {
     if !cfg!(debug_assertions) {
+        println!(
+            "{0}",
+            "Developer only endpoint | HandleDeveloperSeeConfigFileEndpoint:  _".red()
+        );
         return HttpResponse::Unauthorized().finish();
     }
 
     if let Ok(data) = encryptionHandler::DecryptConfigData() {
+        println!(
+            "{0}",
+            "Returning config file | HandleDeveloperSeeConfigFileEndpoint:  _".green()
+        );
         return HttpResponse::Ok().json(json!(data));
     }
 
     if let Err(E) = encryptionHandler::DecryptConfigData() {
+        println!(
+            "{0} {1:?}",
+            "Error decrypting config file | HandleDeveloperSeeConfigFileEndpoint:  ".red(),
+            E
+        );
         return HttpResponse::InternalServerError().json(json!({"response": E.to_string()}));
     }
 
+    println!(
+        "{0}",
+        "Returning not implemented | HandleDeveloperSeeConfigFileEndpoint:  _".red()
+    );
     HttpResponse::NotImplemented().finish()
 }

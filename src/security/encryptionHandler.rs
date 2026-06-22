@@ -93,21 +93,49 @@ pub fn ConfigEncryptionKeyHash() -> Result<String, ()> {
 }
 
 // Encrypt data function
-pub fn EncryptData(DATA: &[u8], KEY: &[u8]) -> Result<Vec<u8>, Error> {
+pub fn EncryptConfigData(DATA: &[u8]) -> Result<Vec<u8>, Error> {
+    // Getting key file
+    let mut keyFile: fs::File = match fs::File::open(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION) {
+        Ok(FILE) => FILE,
+        Err(E) => {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "{0} {1:?}",
+                    "Unable to get config key file Error (keyFile) | EncryptConfigData:  ".red(),
+                    E
+                ),
+            ));
+        }
+    };
+
+    // Reading key file
+    let mut keyFileDataBuffer = Vec::new();
+    keyFile.read_to_end(&mut keyFileDataBuffer).map_err(|E| {
+        Error::new(
+            ErrorKind::Other,
+            format!(
+                "{0} {1:?}",
+                "Unable to read config key file | EncryptConfigData:  ".red(),
+                E
+            ),
+        )
+    })?;
+
     // Verifying key length
-    if KEY.len() != 32 {
+    if keyFileDataBuffer.len() != 32 {
         return Err(Error::new(
             ErrorKind::InvalidData,
             "Key length must be 32 bytes",
         ));
     }
 
-    let CIPHER = Aes256Gcm::new_from_slice(KEY).map_err(|E| {
+    let CIPHER = Aes256Gcm::new_from_slice(&keyFileDataBuffer).map_err(|E| {
         Error::new(
             ErrorKind::Other,
             format!(
                 "{0} {1:?}",
-                "Encrypt Data Error (creating cipher) | EncryptData:  ".red(),
+                "Encrypt Data Error (creating cipher) | EncryptConfigData:  ".red(),
                 E
             ),
         )
@@ -123,7 +151,7 @@ pub fn EncryptData(DATA: &[u8], KEY: &[u8]) -> Result<Vec<u8>, Error> {
             ErrorKind::Other,
             format!(
                 "{0} {1:?}",
-                "Encrypt Data Error (encrypting) | EncryptData:  ".red(),
+                "Encrypt Data Error (encrypting) | EncryptConfigData:  ".red(),
                 E
             ),
         )
@@ -146,7 +174,7 @@ pub fn DecryptConfigData() -> Result<crate::ServerConfigFile, Error> {
                 ErrorKind::Other,
                 format!(
                     "{0} {1:?}",
-                    "Unable to get config file Error (configFile) | DecryptData:  ".red(),
+                    "Unable to get config file Error (configFile) | DecryptConfigData:  ".red(),
                     E
                 ),
             ));
@@ -159,7 +187,7 @@ pub fn DecryptConfigData() -> Result<crate::ServerConfigFile, Error> {
                 ErrorKind::Other,
                 format!(
                     "{0} {1:?}",
-                    "Unable to get key file Error (keyFile) | DecryptData:  ".red(),
+                    "Unable to get key file Error (keyFile) | DecryptConfigData:  ".red(),
                     E
                 ),
             ));
@@ -174,7 +202,7 @@ pub fn DecryptConfigData() -> Result<crate::ServerConfigFile, Error> {
                 ErrorKind::Other,
                 format!(
                     "{0} {1:?}",
-                    "Unable to read config file | DecryptData:".red(),
+                    "Unable to read config file | DecryptConfigData:".red(),
                     E
                 ),
             )
@@ -186,7 +214,7 @@ pub fn DecryptConfigData() -> Result<crate::ServerConfigFile, Error> {
             ErrorKind::Other,
             format!(
                 "{0} {1:?}",
-                "Unable to read key file | DecryptData:".red(),
+                "Unable to read key file | DecryptConfigData:".red(),
                 E
             ),
         )
@@ -209,7 +237,10 @@ pub fn DecryptConfigData() -> Result<crate::ServerConfigFile, Error> {
     if configFileDataBuffer.len() < 12 {
         return Err(Error::new(
             ErrorKind::InvalidData,
-            format!("{0}", "Data length must be greater than 12 bytes | DecryptData".red()),
+            format!(
+                "{0}",
+                "Data length must be greater than 12 bytes | DecryptConfigData".red()
+            ),
         ));
     }
 
@@ -218,7 +249,7 @@ pub fn DecryptConfigData() -> Result<crate::ServerConfigFile, Error> {
             ErrorKind::Other,
             format!(
                 "{0} {1:?}",
-                "Decrypt Data Error (creating cipher) | DecryptData:  ".red(),
+                "Decrypt Data Error (creating cipher) | DecryptConfigData:  ".red(),
                 E
             ),
         )
@@ -232,7 +263,7 @@ pub fn DecryptConfigData() -> Result<crate::ServerConfigFile, Error> {
             ErrorKind::Other,
             format!(
                 "{0} {1:?}",
-                "Error decrypting data | DecryptData:  ".red(),
+                "Error decrypting data | DecryptConfigData:  ".red(),
                 E
             ),
         )
@@ -243,7 +274,7 @@ pub fn DecryptConfigData() -> Result<crate::ServerConfigFile, Error> {
             ErrorKind::Other,
             format!(
                 "{0} {1:?}",
-                "Error deserializing decrypted config | DecryptData:".red(),
+                "Error deserializing decrypted config | DecryptConfigData:".red(),
                 E
             ),
         )

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { FiLogOut } from "react-icons/fi";
 import { GrUpdate } from "react-icons/gr";
 import { ImCancelCircle } from "react-icons/im";
-import { MdUpdate } from "react-icons/md";
 
 // Interface
 interface CurrentAdminDetails {
@@ -54,6 +53,56 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
         fetchCurrentAdminDetails();
     }, []);
 
+    // Updating password handler function
+    async function updatePasswordHandler() {
+        try {
+            const UPDATE_PASSWORD_API = await fetch("/api/auth/updateAdminPassword", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    currentPassword: passwordForm.currentPassword,
+                    newPassword: passwordForm.newPassword,
+                    confirmPassword: passwordForm.confirmPassword,
+                }),
+            });
+
+            if (!UPDATE_PASSWORD_API.ok) {
+                setUpdatingPassword(false);
+
+                setPasswordForm({
+                    currentPassword: "",
+                    newPassword: "",
+                    confirmPassword: "",
+                });
+
+                return setPasswordForm({
+                    currentPassword: "",
+                    newPassword: "",
+                    confirmPassword: "",
+                });
+            }
+
+            setUpdatingPassword(false);
+
+            setPasswordForm({
+                currentPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+            });
+        } catch (e) {
+            setUpdatingPassword(false);
+
+            setPasswordForm({
+                currentPassword: "",
+                newPassword: "",
+                confirmPassword: "",
+            });
+        }
+    }
+
     return (
         <div className="h-full w-full rounded-xl bg-[#0A0C0E]/30 border border-white/10 backdrop-blur-xl inset-shadow-white/30 inset-shadow-2xs shadow-white/20 shadow-lg flex flex-col gap-5">
             {/* Heading Image */}
@@ -61,7 +110,7 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                 <Image src="/ORGVault Heading Geist Mono.png" alt="profile bar heading" width={320} height={160} className="m-auto" draggable={false} loading="eager" />
             </div>
 
-            {/* Current Admin Details / Update Password */}
+            {/* Current Admin Details */}
             <div className="flex flex-col gap-5 border-b-2 border-white/10 pb-7 px-5">
                 {!updatingPassword ? (
                     <>
@@ -174,7 +223,10 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
 
                         {/* Buttons */}
                         <div className="flex gap-3">
-                            <button className="flex-1 flex items-center justify-center gap-2 rounded-full px-3 py-1 text-white font-medium shadow-lg shadow-[#00FF00]/25 inset-shadow-sm inset-shadow-[#00FF00] border border-[#32f332] hover:bg-[#00FF00]/75 transition-all select-none cursor-pointer text-lg outline-none">
+                            <button
+                                onClick={updatePasswordHandler}
+                                className="flex-1 flex items-center justify-center gap-2 rounded-full px-3 py-1 text-white font-medium shadow-lg shadow-[#00FF00]/25 inset-shadow-sm inset-shadow-[#00FF00] border border-[#32f332] hover:bg-[#00FF00]/75 transition-all select-none cursor-pointer text-lg outline-none"
+                            >
                                 Update <GrUpdate className="text-sm" />
                             </button>
 

@@ -2,13 +2,13 @@ pub mod webServer;
 pub mod webServerEndpoints;
 use std::{
     fs,
-    io::{Error, ErrorKind, Read, Write},
+    io::{Error, ErrorKind, Write},
     net::Ipv4Addr,
     sync::atomic::Ordering,
 };
 
 use crate::security::encryptionHandler::{
-    EncryptData, EncryptionKeyType, GenerateConfigEncryptionKey,
+    EncryptConfigData, EncryptionKeyType, GenerateConfigEncryptionKey,
 };
 use colored::*;
 
@@ -22,6 +22,7 @@ pub const WEB_SERVER_FRONTEND_PORT: u16 = 3000;
 pub fn CreateReturnConfigFile() -> Result<crate::ConfigFileReturnValue, Error> {
     return match fs::OpenOptions::new()
         .read(true)
+        .truncate(true)
         .write(true)
         .open(&*crate::GLOBAL_PROGRAM_CONFIG_FILE)
     {
@@ -101,15 +102,10 @@ pub fn InitializeConfigFile(
     };
 
     // Converting to JSON
-    let JSON = serde_json::to_string_pretty(&CONFIG_FILE_DATA)
+    let JSON_DATA = serde_json::to_string_pretty(&CONFIG_FILE_DATA)
         .map_err(|E| Error::new(ErrorKind::Other, E))?;
 
-    let mut keyFile: fs::File = fs::File::open(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION)?;
-
-    let mut keyFileDataBuffer = Vec::new();
-    keyFile.read_to_end(&mut keyFileDataBuffer)?;
-
-    let ENCRYPTED_DATA = EncryptData(JSON.as_bytes(), &keyFileDataBuffer);
+    let ENCRYPTED_DATA = EncryptConfigData(JSON_DATA.as_bytes());
 
     // Writing to file
     configFile.write_all(ENCRYPTED_DATA?.as_slice())?;
