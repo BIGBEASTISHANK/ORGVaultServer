@@ -21,6 +21,9 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
     });
 
     const [updatingPassword, setUpdatingPassword] = useState(false);
+    const [passwordUpdateError, setPasswordUpdateError] = useState("");
+    const [passwordUpdateSuccess, setPasswordUpdateSuccess] = useState("");
+    const [updatingPasswordLoading, setUpdatingPasswordLoading] = useState(false);
 
     const [passwordForm, setPasswordForm] = useState({
         currentPassword: "",
@@ -55,7 +58,16 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
 
     // Updating password handler function
     async function updatePasswordHandler() {
+        setPasswordUpdateError("");
+        setPasswordUpdateSuccess("");
+
+        if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+            return setPasswordUpdateError("All fields are required.");
+        }
+
         try {
+            setUpdatingPasswordLoading(true);
+
             const UPDATE_PASSWORD_API = await fetch("/api/auth/updateAdminPassword", {
                 method: "POST",
                 headers: {
@@ -69,37 +81,30 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                 }),
             });
 
+            const data = await UPDATE_PASSWORD_API.json();
+
             if (!UPDATE_PASSWORD_API.ok) {
-                setUpdatingPassword(false);
+                setPasswordUpdateError(data?.response || "Failed to update password.");
 
-                setPasswordForm({
-                    currentPassword: "",
-                    newPassword: "",
-                    confirmPassword: "",
-                });
-
-                return setPasswordForm({
-                    currentPassword: "",
-                    newPassword: "",
-                    confirmPassword: "",
-                });
+                return;
             }
 
-            setUpdatingPassword(false);
+            setPasswordUpdateSuccess(data?.response || "Password updated successfully.");
 
             setPasswordForm({
                 currentPassword: "",
                 newPassword: "",
                 confirmPassword: "",
             });
-        } catch (e) {
-            setUpdatingPassword(false);
 
-            setPasswordForm({
-                currentPassword: "",
-                newPassword: "",
-                confirmPassword: "",
-            });
+            setTimeout(() => {
+                setUpdatingPassword(false);
+                setPasswordUpdateSuccess("");
+            }, 2000);
+        } catch (error) {
+            setPasswordUpdateError("Something went wrong. Please try again.");
+        } finally {
+            setUpdatingPasswordLoading(false);
         }
     }
 
@@ -220,6 +225,11 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                                 />
                             </div>
                         </div>
+
+                        {/* Feedback */}
+                        {passwordUpdateError && <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-3 py-2 text-red-400 text-sm">{passwordUpdateError}</div>}
+
+                        {passwordUpdateSuccess && <div className="rounded-xl border border-green-500/40 bg-green-500/10 px-3 py-2 text-green-400 text-sm">{passwordUpdateSuccess}</div>}
 
                         {/* Buttons */}
                         <div className="flex gap-3">

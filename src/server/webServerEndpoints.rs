@@ -181,7 +181,7 @@ pub async fn HandleLoginVerificationEndpoint(
     println!(
         "{0}",
         "Returning success | HandleLoginVerificationEndpoint:  _".green()
-    )   ;
+    );
     HttpResponse::Ok().finish()
 }
 
@@ -335,14 +335,6 @@ pub async fn HandleUpdateAdminPasswordEndpoint(
         return HttpResponse::Unauthorized()
             .json(json!({"response": "Confirm password cannot be empty"}));
     }
-    if NEW_PASSWORD != CONFIRM_PASSWORD {
-        println!(
-            "{0}",
-            "NEW_PASSWORD and CONFIRM_PASSWORD do not match | HandleUpdateAdminPasswordEndpoint:  _".red()
-        );
-        return HttpResponse::Unauthorized()
-            .json(json!({"response": "New password and confirm password do not match"}));
-    }
 
     // Decrypting data
     let mut decryptedData: crate::ServerConfigFile =
@@ -372,7 +364,7 @@ pub async fn HandleUpdateAdminPasswordEndpoint(
             "{0}",
             "Admin not found | HandleUpdateAdminPasswordEndpoint:  _".red()
         );
-        return HttpResponse::Unauthorized().json(json!({"response": "Invalid credentials"}));
+        return HttpResponse::Unauthorized().json(json!({"response": "MAC not found "}));
     }
 
     // Checking if current password is correct
@@ -381,7 +373,17 @@ pub async fn HandleUpdateAdminPasswordEndpoint(
             "{0}",
             "CURRENT_PASSWORD does not match | HandleUpdateAdminPasswordEndpoint:  _".red()
         );
-        return HttpResponse::Unauthorized().json(json!({"response": "Invalid credentials"}));
+        return HttpResponse::Unauthorized().json(json!({"response": "Wrong current password"}));
+    }
+
+    // Checking if new password is correct
+    if NEW_PASSWORD != CONFIRM_PASSWORD {
+        println!(
+            "{0}",
+            "NEW_PASSWORD and CONFIRM_PASSWORD do not match | HandleUpdateAdminPasswordEndpoint:  _".red()
+        );
+        return HttpResponse::Unauthorized()
+            .json(json!({"response": "New and confirm password dosen't match"}));
     }
 
     decryptedData.adminDetails[adminIndex].password = NEW_PASSWORD.to_string();

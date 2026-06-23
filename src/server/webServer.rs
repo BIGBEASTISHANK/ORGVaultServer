@@ -82,8 +82,7 @@ pub fn RunWebServerFrontend() -> std::io::Result<Child> {
             .status()?;
     }
 
-    // if cfg!(debug_assertions) {
-    if false {
+    if cfg!(debug_assertions) {
         // Log
         println!(
             "\n{0}----------",
