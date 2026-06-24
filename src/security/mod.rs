@@ -37,7 +37,7 @@ pub fn VerifySecurityRequirements() -> Result<(), String> {
 
     // Checking encryption key file
     println!("\t## Checking encryption key file...");
-    if Path::new(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION).exists() {
+    if Path::new(&*crate::CONFIG_ENCRYPTION_KEY_FILE_LOCATION).exists() {
         println!("\t\t### Encryption key file exists!");
     } else {
         println!(

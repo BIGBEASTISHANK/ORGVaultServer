@@ -97,8 +97,9 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                 confirmPassword: "",
             });
 
+            setUpdatingPassword(false);
+
             setTimeout(() => {
-                setUpdatingPassword(false);
                 setPasswordUpdateSuccess("");
             }, 2000);
         } catch (error) {
@@ -153,6 +154,9 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                                 )}
                             </div>
                         </div>
+
+                        {/* Feedback */}
+                        {passwordUpdateSuccess && <div className="rounded-xl border border-green-500/40 bg-green-500/10 px-3 py-2 text-green-400 text-sm">{passwordUpdateSuccess}</div>}
 
                         {/* Update Password Button */}
                         <div className="items-center">
@@ -228,7 +232,6 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
 
                         {/* Feedback */}
                         {passwordUpdateError && <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-3 py-2 text-red-400 text-sm">{passwordUpdateError}</div>}
-
                         {passwordUpdateSuccess && <div className="rounded-xl border border-green-500/40 bg-green-500/10 px-3 py-2 text-green-400 text-sm">{passwordUpdateSuccess}</div>}
 
                         {/* Buttons */}

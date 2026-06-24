@@ -88,7 +88,7 @@ pub fn InitializeConfigFile(
     // Creating config file data
     let CONFIG_FILE_DATA: crate::ServerConfigFile = crate::ServerConfigFile {
         serverDetails: crate::SCFServerDetails {
-            commonEncryptionKeyLoc: crate::GLOBAL_COMMON_ENCRYPTION_KEY_FILE_LOCATION.to_string(),
+            commonEncryptionKeyLoc: crate::COMMON_ENCRYPTION_KEY_FILE_LOCATION.to_string(),
         },
         adminDetails: vec![crate::SCFAdminDetails {
             name: NAME.to_string(),

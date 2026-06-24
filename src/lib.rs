@@ -24,7 +24,7 @@ pub static GLOBAL_PROGRAM_CONFIG_FILE: LazyLock<String> = LazyLock::new(|| {
     }
 });
 
-pub static GLOBAL_ENCRYPTION_KEY_FILE_LOCATION: LazyLock<String> = LazyLock::new(|| {
+pub static CONFIG_ENCRYPTION_KEY_FILE_LOCATION: LazyLock<String> = LazyLock::new(|| {
     if cfg!(debug_assertions) {
         format!("{0}/GlobalConfigTesting/key.bin", *CURRENT_DIR)
     } else {
@@ -32,7 +32,7 @@ pub static GLOBAL_ENCRYPTION_KEY_FILE_LOCATION: LazyLock<String> = LazyLock::new
     }
 });
 
-pub static GLOBAL_COMMON_ENCRYPTION_KEY_FILE_LOCATION: LazyLock<String> = LazyLock::new(|| {
+pub static COMMON_ENCRYPTION_KEY_FILE_LOCATION: LazyLock<String> = LazyLock::new(|| {
     if cfg!(debug_assertions) {
         format!("{0}/GlobalConfigTesting/commonEncKey.bin", *CURRENT_DIR)
     } else {

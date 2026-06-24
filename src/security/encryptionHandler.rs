@@ -20,9 +20,9 @@ pub fn GenerateConfigEncryptionKey(EKT: EncryptionKeyType) -> Result<(), Error> 
     rand::thread_rng().fill_bytes(&mut key[..]);
 
     let KEY_FILE_LOCATION = if EKT == EncryptionKeyType::ConfigKey {
-        &*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION
+        &*crate::CONFIG_ENCRYPTION_KEY_FILE_LOCATION
     } else if EKT == EncryptionKeyType::CommonKey {
-        &*crate::GLOBAL_COMMON_ENCRYPTION_KEY_FILE_LOCATION
+        &*crate::COMMON_ENCRYPTION_KEY_FILE_LOCATION
     } else {
         return Err(Error::new(
             ErrorKind::Other,
@@ -65,7 +65,7 @@ pub fn GenerateConfigEncryptionKey(EKT: EncryptionKeyType) -> Result<(), Error> 
 pub fn ConfigEncryptionKeyHash() -> Result<String, ()> {
     // Running command and returning output
     let COMMAND_OUTPUT = Command::new("sha256sum")
-        .arg(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION)
+        .arg(&*crate::CONFIG_ENCRYPTION_KEY_FILE_LOCATION)
         .output()
         .map_err(|E| {
             println!(
@@ -95,7 +95,7 @@ pub fn ConfigEncryptionKeyHash() -> Result<String, ()> {
 // Encrypt data function
 pub fn EncryptConfigData(DATA: &[u8]) -> Result<Vec<u8>, Error> {
     // Getting key file
-    let mut keyFile: fs::File = match fs::File::open(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION) {
+    let mut keyFile: fs::File = match fs::File::open(&*crate::CONFIG_ENCRYPTION_KEY_FILE_LOCATION) {
         Ok(FILE) => FILE,
         Err(E) => {
             return Err(Error::new(
@@ -180,7 +180,7 @@ pub fn DecryptConfigData() -> Result<crate::ServerConfigFile, Error> {
             ));
         }
     };
-    let mut keyFile: fs::File = match fs::File::open(&*crate::GLOBAL_ENCRYPTION_KEY_FILE_LOCATION) {
+    let mut keyFile: fs::File = match fs::File::open(&*crate::CONFIG_ENCRYPTION_KEY_FILE_LOCATION) {
         Ok(FILE) => FILE,
         Err(E) => {
             return Err(Error::new(
