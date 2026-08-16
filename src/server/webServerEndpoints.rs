@@ -32,7 +32,7 @@ pub async fn HandleInitializedStatusEndpoint() -> HttpResponse {
             "{0}",
             "Server is not initialized | HandleInitializedStatusEndpoint:  _".red()
         );
-        return HttpResponse::NoContent().finish();
+        return HttpResponse::Unauthorized().finish();
     }
 }
 
@@ -432,6 +432,12 @@ pub async fn HandleUpdateAdminPasswordEndpoint(
                 .json(json!({"response": "Internal Server Error"}));
         }
     };
+
+    // Saving as plain text if in debug mode
+    if cfg!(debug_assertions) {
+        let mut planeConfigFile = std::fs::File::create(crate::GPC_PLAIN_FILE_LOCATION.to_string()).unwrap();
+        planeConfigFile.write_all(JSON_DATA.as_bytes()).unwrap();
+    }
 
     match configFile.write_all(ENCRYPTED_DATA.as_slice()) {
         Ok(_) => {

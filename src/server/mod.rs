@@ -55,10 +55,7 @@ pub fn CreateReturnConfigFile() -> Result<crate::ConfigFileReturnValue, Error> {
             }
 
             // Unexpected error occured
-            _ => Err(Error::new(
-                ErrorKind::Other,
-                "Unexpected error occurred",
-            )),
+            _ => Err(Error::new(ErrorKind::Other, "Unexpected error occurred")),
         },
     };
 }
@@ -109,6 +106,12 @@ pub fn InitializeConfigFile(
 
     // Writing to file
     configFile.write_all(ENCRYPTED_DATA?.as_slice())?;
+
+    // Saving as plain text if in debug mode
+    if cfg!(debug_assertions) {
+        let mut planeConfigFile = std::fs::File::create(crate::GPC_PLAIN_FILE_LOCATION.to_string())?;
+        planeConfigFile.write_all(JSON_DATA.as_bytes())?;
+    }
 
     // Setting initialized state
     crate::isInitialized.swap(true, Ordering::SeqCst);

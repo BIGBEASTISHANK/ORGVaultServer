@@ -51,6 +51,14 @@ pub static WEB_FRONTEND_DATA_FILE: LazyLock<String> = LazyLock::new(|| {
 pub static MAC_ADDRESS_FORMAT: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$").unwrap());
 
+pub static GPC_PLAIN_FILE_LOCATION: LazyLock<String> = LazyLock::new(|| {
+    if cfg!(debug_assertions) {
+        format!("{0}/GlobalConfigTesting/plainConfig.json", *CURRENT_DIR)
+    } else {
+        "".to_string()
+    }
+});
+
 // Mutable variables
 pub static rebuildFrontendStatus: AtomicBool = AtomicBool::new(true);
 pub static isInitialized: AtomicBool = AtomicBool::new(false);
@@ -63,7 +71,7 @@ pub struct ConfigFileReturnValue {
 }
 
 // Server config file data structure
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct ServerConfigFile {
     pub serverDetails: SCFServerDetails,
     pub adminDetails: Vec<SCFAdminDetails>,
@@ -72,12 +80,12 @@ pub struct ServerConfigFile {
     pub employees: Vec<SCFEmployee>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct SCFServerDetails {
     pub commonEncryptionKeyLoc: String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct SCFAdminDetails {
     pub name: String,
     pub macAddress: String,
@@ -85,7 +93,7 @@ pub struct SCFAdminDetails {
     pub password: String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct SCFManagers {
     pub name: String,
     pub macAddress: String,
@@ -93,13 +101,13 @@ pub struct SCFManagers {
     pub departments: Vec<String>,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct SCFFolders {
     pub folderName: String,
     pub department: String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct SCFEmployee {
     pub name: String,
     pub macAddress: String,

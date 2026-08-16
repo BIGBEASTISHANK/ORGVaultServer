@@ -117,15 +117,15 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
             </div>
 
             {/* Current Admin Details */}
-            <div className="flex flex-col gap-5 border-b-2 border-white/10 pb-7 px-5">
+            <div className="flex flex-col gap-5 border-b-2 border-white/10 pb-7 px-5 bg-red-">
                 {!updatingPassword ? (
                     <>
                         {/* Name */}
                         <div className="items-center">
                             <h1 className="text-sm text-gray-400 font-bold ml-2">Name:</h1>
 
-                            <div className="border border-[#3AB1F5]/80 rounded-xl backdrop-blur-xl inset-shadow-[#3AB1F5]/50 inset-shadow-sm shadow-[#3AB1F5]/20 shadow-lg px-2 py-1">
-                                {!currentAdminDetails.name ? <div className="h-7 w-40 animate-pulse rounded-md bg-white/10" /> : <p className="text-lg">{currentAdminDetails.name}</p>}
+                            <div className="border border-white/10 shadow-sm bg-white/[0.02] shadow-white/30 rounded-xl backdrop-blur-xl px-2 py-1">
+                                {!currentAdminDetails.name ? <div className="h-7 w-full animate-pulse rounded-md bg-white/10" /> : <p className="text-lg">{currentAdminDetails.name}</p>}
                             </div>
                         </div>
 
@@ -133,9 +133,9 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                         <div className="items-center">
                             <h1 className="text-sm text-gray-400 font-bold ml-2">MAC Address:</h1>
 
-                            <div className="border border-[#3AB1F5]/80 rounded-xl backdrop-blur-xl inset-shadow-[#3AB1F5]/50 inset-shadow-sm shadow-[#3AB1F5]/20 shadow-lg px-2 py-1">
+                            <div className="border border-white/10 shadow-sm bg-white/[0.02] shadow-white/30 rounded-xl backdrop-blur-xl px-2 py-1">
                                 {!currentAdminDetails.macAddress ? (
-                                    <div className="h-7 w-52 animate-pulse rounded-md bg-white/10" />
+                                    <div className="h-7 w-full animate-pulse rounded-md bg-white/10" />
                                 ) : (
                                     <p className="text-lg">{currentAdminDetails.macAddress}</p>
                                 )}
@@ -146,9 +146,9 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                         <div className="items-center">
                             <h1 className="text-sm text-gray-400 font-bold ml-2">Username:</h1>
 
-                            <div className="border border-[#3AB1F5]/80 rounded-xl backdrop-blur-xl inset-shadow-[#3AB1F5]/50 inset-shadow-sm shadow-[#3AB1F5]/20 shadow-lg px-2 py-1">
+                            <div className="border border-white/10 shadow-sm bg-white/[0.02] shadow-white/30 rounded-xl backdrop-blur-xl px-2 py-1">
                                 {!currentAdminDetails.username ? (
-                                    <div className="h-7 w-32 animate-pulse rounded-md bg-white/10" />
+                                    <div className="h-7 w-full animate-pulse rounded-md bg-white/10" />
                                 ) : (
                                     <p className="text-lg">{currentAdminDetails.username}</p>
                                 )}
@@ -162,7 +162,7 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                         <div className="items-center">
                             <button
                                 onClick={() => setUpdatingPassword(true)}
-                                className="rounded-full flex items-center gap-2 px-3 py-1 text-white font-medium shadow-lg shadow-[#00FF00]/25 inset-shadow-sm inset-shadow-[#00FF00] border border-[#32f332] hover:bg-[#00FF00]/75 transition-all select-none cursor-pointer text-lg outline-none"
+                                className="rounded-xl bg-[#21A3EE] hover:bg-[#21A3EE]/80 shadow-sm shadow-[#21A3EE]/50 inset-shadow-xs inset-shadow-white/80 flex items-center gap-2 px-3 py-1 text-white font-medium transition-all select-none cursor-pointer text-lg outline-none"
                             >
                                 Update Password <GrUpdate className="text-sm" />
                             </button>
@@ -174,7 +174,7 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                         <div>
                             <h1 className="text-sm text-gray-400 font-bold ml-2">Current Password:</h1>
 
-                            <div className="border border-[#3AB1F5]/80 rounded-xl backdrop-blur-xl inset-shadow-[#3AB1F5]/50 inset-shadow-sm shadow-[#3AB1F5]/20 shadow-lg px-2 py-1">
+                            <div className="border border-white/10 shadow-sm bg-white/[0.02] shadow-white/30 focus-within:border-[#21A3EE] focus-within:shadow-[#21A3EE]/50 focus-within:shadow-md rounded-xl backdrop-blur-xl px-2 py-1">
                                 <input
                                     type="password"
                                     placeholder="Enter current password"
@@ -194,7 +194,7 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                         <div>
                             <h1 className="text-sm text-gray-400 font-bold ml-2">New Password:</h1>
 
-                            <div className="border border-[#3AB1F5]/80 rounded-xl backdrop-blur-xl inset-shadow-[#3AB1F5]/50 inset-shadow-sm shadow-[#3AB1F5]/20 shadow-lg px-2 py-1">
+                            <div className="border border-white/10 shadow-sm bg-white/[0.02] shadow-white/30 focus-within:border-[#21A3EE] focus-within:shadow-[#21A3EE]/50 focus-within:shadow-md rounded-xl backdrop-blur-xl px-2 py-1">
                                 <input
                                     type="password"
                                     placeholder="Enter new password"
@@ -214,7 +214,7 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                         <div>
                             <h1 className="text-sm text-gray-400 font-bold ml-2">Confirm Password:</h1>
 
-                            <div className="border border-[#3AB1F5]/80 rounded-xl backdrop-blur-xl inset-shadow-[#3AB1F5]/50 inset-shadow-sm shadow-[#3AB1F5]/20 shadow-lg px-2 py-1">
+                            <div className="border border-white/10 shadow-sm bg-white/[0.02] shadow-white/30 focus-within:border-[#21A3EE] focus-within:shadow-[#21A3EE]/50 focus-within:shadow-md rounded-xl backdrop-blur-xl px-2 py-1">
                                 <input
                                     type="password"
                                     placeholder="Confirm new password"
@@ -238,7 +238,7 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                         <div className="flex gap-3">
                             <button
                                 onClick={updatePasswordHandler}
-                                className="flex-1 flex items-center justify-center gap-2 rounded-full px-3 py-1 text-white font-medium shadow-lg shadow-[#00FF00]/25 inset-shadow-sm inset-shadow-[#00FF00] border border-[#32f332] hover:bg-[#00FF00]/75 transition-all select-none cursor-pointer text-lg outline-none"
+                                className="flex-1 flex items-center justify-center bg-[#21A3EE] hover:bg-[#21A3EE]/80 shadow-sm shadow-[#21A3EE]/50 inset-shadow-xs inset-shadow-white/80 gap-2 rounded-full px-3 py-1 text-white font-medium transition-all select-none cursor-pointer text-lg outline-none"
                             >
                                 Update <GrUpdate className="text-sm" />
                             </button>
@@ -252,6 +252,8 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
                                         newPassword: "",
                                         confirmPassword: "",
                                     });
+
+                                    setPasswordUpdateError("");
                                 }}
                                 className="flex-1 flex items-center justify-center gap-2 rounded-full px-3 py-1 text-white font-medium shadow-lg shadow-[#FF3333]/25 inset-shadow-sm inset-shadow-[#FF3333] border border-[#f95252] hover:bg-[#FF3333]/75 transition-all select-none cursor-pointer text-lg outline-none"
                             >
@@ -263,14 +265,14 @@ export default function ProfileBar({ logoutFunction, logoutError, loggingOut }: 
             </div>
 
             {/* Other admins */}
-            <div className="h-full"></div>
+            <div className="h-full bg-red-500/20"></div>
 
             {/* Logout Button */}
             <div className="mt-auto">
                 <div className="border-t-2 border-white/20 px-5 py-5">
                     <button
                         onClick={logoutFunction}
-                        className="w-full py-3 rounded-2xl text-white font-medium shadow-xl shadow-[#FF3333]/25 inset-shadow-sm inset-shadow-[#FF3333] border border-[#f95252] hover:bg-[#FF3333]/75 transition-all select-none cursor-pointer text-xl outline-none"
+                        className="w-full py-3 rounded-2xl text-white font-medium shadow-sm shadow-[#21A3EE]/50 inset-shadow-xs inset-shadow-white/80 bg-[#21A3EE] hover:bg-[#21A3EE]/75 transition-all select-none cursor-pointer text-xl outline-none"
                     >
                         {loggingOut ? (
                             <div className="flex items-center justify-center gap-3">

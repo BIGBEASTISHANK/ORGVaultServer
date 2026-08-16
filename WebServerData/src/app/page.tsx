@@ -75,6 +75,7 @@ export default function Home() {
             const API_RESPONSE = await fetch("/api/auth/logout");
 
             if (API_RESPONSE.ok) {
+                setNeedsInitialization(false);
                 setIsAuthenticated(false);
             }
         } catch (err) {
